@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OFFLAG</title>
+  <style>
+    body {
+     user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    }
+    :root{
+      --bg: rgb(31,31,31);
+      --card: #222;
+      --muted: #bbb;
+      --accent: #2d8cff;
+      --phone-width: 170px; /* меняйте размеры тут */
+      --laptop-width: 420px;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg);
+      color: white;
+      overflow-x: hidden;
+    }
+
+    .container {
+      position: relative;
+      width: 100%;
+      min-height: 100vh;
+      background-color: var(--bg);
+    }
+
+    /* ===== Logo intro ===== */
+    .logo-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      background-color: var(--bg);
+      transition: transform 1.5s ease, opacity 1.5s ease;
+    }
+
+    .logo-screen video {
+      width: 220px;
+      height: auto;
+    }
+
+    .logo-screen.hide {
+      transform: translateY(-60%);
+      opacity: 0;
+    }
+
+    /* ===== Main content ===== */
+    .main-content {
+      opacity: 0;
+      transform: translateY(50px);
+      transition: opacity 1.5s ease, transform 1.5s ease;
+      text-align: center;
+    }
+
+    .main-content.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    header {
+      padding-top: 48px;
+      text-align: center;
+    }
+
+    .logo img {
+      width: 160px;
+      height: auto;
+    }
+
+    .logo .text {
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 1.05rem;
+    }
+
+    /* ===== Hero: logo + devices ===== */
+    .hero {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 36px;
+      margin-top: 20px;
+      padding: 0 18px;
+    }
+
+    .hero-left {
+      min-width: 220px;
+      text-align: left;
+    }
+
+    .tagline {
+      color: var(--muted);
+      font-size: 1.05rem;
+      margin-top: 8px;
+    }
+
+    .cta-row {
+      margin-top: 18px;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .cta-button{
+      background: var(--accent);
+      color: #001;
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+    }
+
+    /* ===== Devices wrapper ===== */
+    .devices{
+      display: flex;
+      gap: 18px;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .device{
+      display: inline-block;
+      position: relative;
+      user-select: none;
+    }
+
+    /* Phone mockup */
+    .device.phone{
+      width: var(--phone-width);
+      border-radius: 26px;
+      padding: 12px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      box-shadow: 0 6px 22px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.03);
+    }
+
+    .device.phone .screen{
+      width: 100%;
+      height: calc(var(--phone-width) * 1.9);
+      background: #000;
+      border-radius: 14px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .device.phone .screen img,
+    .device.phone .screen video{
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* tiny notch / speaker */
+    .device.phone::before{
+      content: '';
+      position: absolute;
+      top: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 36px;
+      height: 6px;
+      border-radius: 6px;
+      background: rgba(255,255,255,0.04);
+    }
+
+    /* Laptop mockup */
+    .device.laptop{
+      width: var(--laptop-width);
+      border-radius: 12px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      padding: 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+      border: 1px solid rgba(255,255,255,0.03);
+    }
+
+    .device.laptop .screen{
+      width: 100%;
+      height: calc(var(--laptop-width) * 0.6);
+      border-radius: 8px;
+      overflow: hidden;
+      background: #000;
+    }
+
+    .device.laptop .screen img,
+    .device.laptop .screen video{
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .device.laptop .base{
+      margin-top: 10px;
+      height: 12px;
+      background: linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border-radius: 6px;
+    }
+
+    /* small screens: stack and reduce sizes */
+    @media (max-width: 900px){
+      :root{ --laptop-width: 320px; }
+      .hero-left{ text-align: center; }
+    }
+
+    @media (max-width: 520px){
+      :root{ --phone-width: 150px; --laptop-width: 300px }
+      .cta-row{ justify-content: center; }
+    }
+
+    /* ===== Download Section ===== */
+    .download {
+      margin-top: 60px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .download h2 {
+      font-size: 1.8rem;
+      margin-bottom: 10px;
+    }
+
+    .platforms {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 16px;
+    }
+
+    .platform {
+      background: var(--card);
+      border: 1px solid #444;
+      border-radius: 12px;
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      transition: background 0.3s, transform 0.3s;
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    .platform.show {
+      opacity: 1;
+      transform: translateY(0);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+
+    .platform img {
+      width: 24px;
+      height: 24px;
+    }
+
+    /* ===== Why Us Section ===== */
+    .why {
+      margin-top: 100px;
+      text-align: center;
+      padding: 0 20px;
+    }
+
+    .why h2 {
+      font-size: 2rem;
+      margin-bottom: 40px;
+    }
+
+    .why-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 30px;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .why-item {
+      background: var(--card);
+      border-radius: 16px;
+      padding: 30px 20px;
+      transition: transform 0.3s ease, background 0.3s ease;
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    .why-item.show {
+      opacity: 1;
+      transform: translateY(0);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+
+    .why-item:hover {
+      background: #2d2d2d;
+      transform: translateY(-5px);
+    }
+
+    .why-item img {
+      width: 50px;
+      height: 50px;
+      margin-bottom: 15px;
+    }
+
+    .why-item h3 {
+      font-size: 1.2rem;
+      margin-bottom: 10px;
+    }
+
+    .why-item p {
+      color: var(--muted);
+      font-size: 0.95rem;
+      line-height: 1.4;
+    }
+
+    /* ===== Footer ===== */
+    footer {
+      margin-top: 100px;
+      padding: 40px 0;
+      border-top: 1px solid #333;
+      text-align: center;
+      color: #777;
+      font-size: 0.9rem;
+    }
+
+    footer img {
+      width: 120px;
+      margin-bottom: 10px;
+    }
+
+    footer a {
+      color: #aaa;
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+    /* ===== Platform button hover animation ===== */
+.platform {
+  position: relative;
+  overflow: hidden;
+  background: var(--card);
+  border: 1px solid #444;
+  border-radius: 12px;
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: transform 0.3s ease, background 0.4s ease, box-shadow 0.4s ease;
+}
+
+.platform::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -75%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    120deg,
+    transparent,
+    rgba(255, 255, 255, 0.25),
+    transparent
+  );
+  transform: skewX(-20deg);
+  transition: all 0.6s ease;
+}
+
+.platform:hover {
+  background: linear-gradient(145deg, #2d2d2d, #1c1c1c);
+  transform: translateY(-4px) scale(1.03);
+  box-shadow: 0 0 18px rgba(45, 140, 255, 0.3);
+}
+
+.platform:hover::before {
+  left: 130%;
+}
+
+.platform img {
+  transition: transform 0.4s ease;
+}
+
+.platform:hover img {
+  transform: rotate(-8deg) scale(1.1);
+}
+.device.phone:hover,
+.device.laptop:hover {
+  box-shadow: 0 0 16px rgba(45, 140, 255, 0.25);
+  border-color: rgba(45, 140, 255, 0.15);
+  transition: all 0.4s ease;
+}
+
+
+.device.phone,
+.device.laptop {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255,255,255,0.02));
+  box-shadow: 0 6px 24px rgba(0,0,0,0.5), inset 0 0 4px rgba(255,255,255,0.05);
+}
+
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <div class="logo-screen">
+      <video autoplay playsinline muted>
+        <source src="assets/logo.webm" type="video/webm" />
+        Ваш браузер не поддерживает видео.
+      </video>
+    </div>
+
+    <div class="main-content">
+      <header>
+        <div class="logo">
+          <img src="assets/logo_h.svg" alt="OFFLAG logo">
+          <p class="text">Ничего лишнего: скорость, безопасность, выгода.</p>
+        </div>
+
+        <!-- HERO: logo + devices -->
+        <div class="hero">
+          <div class="hero-left">
+            
+          <div class="devices" aria-hidden="false">
+            <!-- Phone mockup: если хотите заменить GIF на WebM, используйте тег <video autoplay loop muted playsinline> -->
+            <div class="device phone" role="img" aria-label="Превью приложения на телефоне">
+              <div class="screen">
+                <video autoplay loop muted playsinline>
+                        <source src="assets/app-demo-phone.mp4" type="video/mp4" />
+                            Ваш браузер не поддерживает видео.
+                    </video>
+              </div>
+            </div>
+
+            <!-- Laptop mockup -->
+            <div class="device laptop" role="img" aria-label="Превью приложения на ноутбуке">
+              <div class="screen">
+                    <video autoplay loop muted playsinline>
+                        <source src="assets/app-demo-laptop.mp4" type="video/mp4" />
+                            Ваш браузер не поддерживает видео.
+                    </video>
+              </div>
+              <div class="base" aria-hidden="true"></div>
+            </div>
+          </div>
+        </div>
+
+      </header>
+
+      <section class="download">
+        <h2>Скачать OFFLAG</h2>
+        <div class="platforms">
+          <div class="platform"><img src="assets/ios.png" alt="iPhone"> iPhone / iPad</div>
+          <div class="platform"><img src="assets/android.png" alt="Android"> Android</div>
+          <div class="platform"><img src="assets/macos.png" alt="MacOS"> macOS</div>
+          <div class="platform"><img src="assets/windows.png" alt="Windows"> Windows</div>
+          <div class="platform"><img src="assets/linux.png" alt="Linux"> Linux</div>
+        </div>
+      </section>
+
+      <section class="why">
+        <h2>Почему именно мы?</h2>
+        <div class="why-grid">
+          <div class="why-item">
+            <img src="assets/gift.png" alt="Подарок">
+            <h3>14 дней бесплатно</h3>
+            <p>Каждому — 14 дней в подарок при регистрации. Без привязки карт, без подвохов.</p>
+          </div>
+          <div class="why-item">
+            <img src="assets/money.png" alt="Цена">
+            <h3>2 рубля в день</h3>
+            <p>Никаких тарифных ловушек. Просто дешёво, удобно и для всех.</p>
+          </div>
+          <div class="why-item">
+            <img src="assets/server.png" alt="Сервер">
+            <h3>Умный выбор сервера</h3>
+            <p>Автоматически подключаем к серверу с минимальной нагрузкой и пингом.</p>
+          </div>
+          <div class="why-item">
+            <img src="assets/devices.png" alt="Устройства">
+            <h3>1 аккаунт — несколько устройств</h3>
+            <p>Используй OFFLAG на телефоне, ноутбуке и даже роутере.</p>
+          </div>
+          <div class="why-item">
+            <img src="assets/speed.png" alt="Скорость">
+            <h3>Максимальная скорость</h3>
+            <p>Сервис, который не тормозит. Держим канал на уровне.</p>
+          </div>
+          <div class="why-item">
+            <img src="assets/security.png" alt="Безопасность">
+            <h3>Полная защита</h3>
+            <p>Строгая политика без логов. Фильтрация трафика.</p>
+          </div>
+        </div>
+      </section>
+
+      <footer>
+        <img src="assets/logo_h.svg" alt="OFFLAG logo">
+        <p>© 2025 OFFLAG — Все права защищены</p>
+        <p>Связаться с нами: <a href="mailto:support@offlag.com">support@offlag.com</a></p>
+      </footer>
+    </div>
+  </div>
+
+  <script>
+    window.addEventListener("DOMContentLoaded", () => {
+      const logoScreen = document.querySelector(".logo-screen");
+      const mainContent = document.querySelector(".main-content");
+      const video = document.querySelector(".logo-screen video");
+
+      // Если видео отсутствует или не поддерживается — пропускаем заставку
+      if(!video){
+        logoScreen.classList.add('hide');
+        mainContent.classList.add('show');
+        document.body.style.overflowY = 'auto';
+        initObservers();
+        return;
+      }
+
+      video.addEventListener("ended", () => {
+        logoScreen.classList.add("hide");
+        setTimeout(() => {
+          mainContent.classList.add("show");
+          document.body.style.overflowY = "auto";
+          initObservers();
+        }, 1500);
+      });
+
+      // safety: если видео не может автоматически воспроизвестись, добавим таймаут
+      setTimeout(() => {
+        if(!mainContent.classList.contains('show')){
+          logoScreen.classList.add('hide');
+          mainContent.classList.add('show');
+          document.body.style.overflowY = 'auto';
+          initObservers();
+        }
+      }, 3500);
+
+      function initObservers(){
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('show');
+              observer.unobserve(entry.target);
+            }
+          });
+        }, { threshold: 0.2 });
+
+        document.querySelectorAll('.why-item').forEach(item => observer.observe(item));
+        document.querySelectorAll('.platform').forEach(item => observer.observe(item));
+      }
+    });
+  </script>
+</body>
+</html>
